@@ -1,37 +1,51 @@
 package com.qa.PersonProject.services;
 
 import com.qa.PersonProject.entities.Person;
+import com.qa.PersonProject.entities.PersonRepo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PersonService {
-    private List<Person> people = new ArrayList<>();
+
+    private PersonRepo repo;
+
+    public PersonService(PersonRepo repo){
+        super();
+        this.repo = repo;
+    }
 
     public String health() {
         return "My health is ok";
     }
 
     public boolean addPerson(Person person){
-        return this.people.add(person);
+        Person savedPerson = null;
+        savedPerson = this.repo.save(person);
+        return savedPerson.getId() > 0;
     }
 
     public List<Person> getAll() {
-        return this.people;
+        return this.repo.findAll();
     }
 
     public Person updatePerson(Long id, Person person){
-        this.people.remove(id.intValue());
-        this.people.add(id.intValue(),person);
-        return this.people.get(id.intValue());
+        Optional<Person> existingOptionalPerson = this.repo.findById(id);
+        Person existing = existingOptionalPerson.get();
+        existing.setAge(person.getAge());
+        existing.setFirstName(person.getFirstName());
+        existing.setLastName(person.getLastName());
+        return this.repo.save(existing);
 
     }
 
-    public Person removePerson(Long id){
-        return this.people.remove(id.intValue());
+    public boolean removePerson(Long id){
+        this.repo.deleteById(id);
+        return !this.repo.existsById(id);
     }
 
 }
