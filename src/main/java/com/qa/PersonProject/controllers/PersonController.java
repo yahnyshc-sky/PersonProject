@@ -2,10 +2,8 @@ package com.qa.PersonProject.controllers;
 
 import com.qa.PersonProject.entities.Person;
 import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import jakarta.websocket.server.PathParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,4 +27,18 @@ public class PersonController {
     public List<Person> getAll() {
         return this.people;
     }
+
+    @PutMapping("/update")
+    public Person updatePerson(@PathParam("id")Long id,@RequestBody @Valid Person person){
+        this.people.remove(id.intValue());
+        this.people.add(id.intValue(),person);
+        return this.people.get(id.intValue());
+
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Person removePerson(@PathVariable Long id){
+        return this.people.remove(id.intValue());
+    }
+
 }
